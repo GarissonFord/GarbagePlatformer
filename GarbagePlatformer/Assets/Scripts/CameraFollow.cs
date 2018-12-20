@@ -4,12 +4,17 @@ using UnityEngine;
 
 public class CameraFollow : MonoBehaviour
 {
+    //Super simple script that just matches the camera pivot's position to that of the player
+
     public GameObject target;
 
     void Update()
     {
         transform.position = target.transform.position;
     }
+
+    //This hot mess could be used for a future third-person camera
+
     /*
     public float cameraMoveSpeed = 120.0f;
     //What the camera follows
