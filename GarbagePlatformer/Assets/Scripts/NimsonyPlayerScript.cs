@@ -15,6 +15,11 @@ public class NimsonyPlayerScript : MonoBehaviour
 
     Vector2 input;
 
+    //Now I'm taking from this https://www.youtube.com/watch?v=Gv70bd_GHkA
+    float yaw, pitch;
+    Vector3 currentRotation;
+    public float mouseSensitivity = 10f;
+
     void Start()
     {
         rb = GetComponent<Rigidbody>();
@@ -38,7 +43,13 @@ public class NimsonyPlayerScript : MonoBehaviour
         camF = camF.normalized;
         camR = camR.normalized;
 
-        //transform.position += new Vector3(input.x, 0.0f, input.y) * Time.deltaTime * 5;
+        if(Input.GetAxis("Vertical") > 0)
+        {
+            //Sets rotation to the camera pivot's forward
+            currentRotation = camPivot.eulerAngles;
+            transform.eulerAngles = currentRotation;
+        }
+
         transform.position += (camF * input.y + camR * input.x) * Time.deltaTime * 5;
     }
 

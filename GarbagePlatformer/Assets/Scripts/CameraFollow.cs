@@ -4,6 +4,13 @@ using UnityEngine;
 
 public class CameraFollow : MonoBehaviour
 {
+    public GameObject target;
+
+    void Update()
+    {
+        transform.position = target.transform.position;
+    }
+    /*
     public float cameraMoveSpeed = 120.0f;
     //What the camera follows
     public GameObject CameraFollowObj;
@@ -67,4 +74,5 @@ public class CameraFollow : MonoBehaviour
         float step = cameraMoveSpeed * Time.deltaTime;
         transform.position = Vector3.MoveTowards(transform.position, target.position, step);
     }
+    */
 }
