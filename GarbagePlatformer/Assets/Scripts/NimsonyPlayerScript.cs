@@ -5,7 +5,10 @@ using UnityEngine;
 public class NimsonyPlayerScript : MonoBehaviour
 {
     public Rigidbody rb;
+    Animator anim;
     public float jumpForce;
+
+    public bool grounded;
 
     //Lifted right from https://www.youtube.com/watch?v=ORD7gsuLivE&t=524s
 
@@ -23,6 +26,7 @@ public class NimsonyPlayerScript : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody>();
+        anim = GetComponent<Animator>();
     }
 
     void Update ()
@@ -31,7 +35,16 @@ public class NimsonyPlayerScript : MonoBehaviour
         heading += Input.GetAxis("Mouse X") * Time.deltaTime * 180;
         camPivot.rotation = Quaternion.Euler(0, heading, 0);
 
-        input = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
+        float h = Input.GetAxis("Horizontal"); float v = Input.GetAxis("Vertical");
+
+        //If the player is moving at all
+        if (h != 0 || v != 0)
+            anim.SetBool("IsMoving", true);
+        else if (h == 0 && v == 0)
+            anim.SetBool("IsMoving", false);
+
+
+        input = new Vector2(h, v);
         input = Vector2.ClampMagnitude(input, 1);
 
         Vector3 camF = cam.forward; //forward
@@ -43,7 +56,7 @@ public class NimsonyPlayerScript : MonoBehaviour
         camF = camF.normalized;
         camR = camR.normalized;
 
-        if(Input.GetAxis("Vertical") > 0)
+        if(v > 0)
         {
             //Sets rotation to the camera pivot's forward
             currentRotation = camPivot.eulerAngles;
@@ -53,9 +66,35 @@ public class NimsonyPlayerScript : MonoBehaviour
         transform.position += (camF * input.y + camR * input.x) * Time.deltaTime * 5;
     }
 
+    void LateUpdate()
+    {
+        anim.SetFloat("Velocity", rb.velocity.y);    
+    }
+
     void FixedUpdate()
     {
         if (Input.GetButtonDown("Jump"))
+        {
             rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+            anim.SetTrigger("Jump");
+        }
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Ground"))
+            anim.SetBool("Grounded", true);
+    }
+
+    private void OnCollisionStay(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Ground"))
+            anim.SetBool("Grounded", true);
+    }
+
+    private void OnCollisionExit(Collision collision)
+    {
+        if(collision.gameObject.CompareTag("Ground"))
+            anim.SetBool("Grounded", false);
     }
 }
