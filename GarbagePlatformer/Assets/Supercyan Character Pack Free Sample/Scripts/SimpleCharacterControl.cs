@@ -126,7 +126,9 @@ public class SimpleCharacterControl : MonoBehaviour {
         m_currentV = Mathf.Lerp(m_currentV, v, Time.deltaTime * m_interpolation);
         m_currentH = Mathf.Lerp(m_currentH, h, Time.deltaTime * m_interpolation);
 
-        transform.position += transform.forward * m_currentV * m_moveSpeed * Time.deltaTime;
+        //Edited this line myself, replaced 
+        //+=transform.forward with +=camera.transform.forward
+        transform.position += Camera.main.transform.forward * m_currentV * m_moveSpeed * Time.deltaTime;
         transform.Rotate(0, m_currentH * m_turnSpeed * Time.deltaTime, 0);
 
         m_animator.SetFloat("MoveSpeed", m_currentV);

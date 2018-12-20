@@ -27,15 +27,20 @@ public class PlayerController : MonoBehaviour
         
         Vector3 movement = new Vector3(x, 0.0f, z);
 
+        /*
         if (z != 0)
         {
-            float difference = cameraBase.transform.eulerAngles.y - transform.eulerAngles.y;
-            transform.Rotate(0.0f, difference, 0.0f, Space.Self);
+            
+            //float difference = cameraBase.transform.localEulerAngles.y - transform.localEulerAngles.y;
+            //transform.Rotate(0.0f, difference, 0.0f, Space.World);
             movement += cameraBase.transform.forward;
-            rb.AddRelativeForce(cameraBase.transform.forward * speed);
+            transform.LookAt(cameraBase.transform.forward);
+            //rb.AddRelativeForce(cameraBase.transform.forward * speed);        
+            //transform.Rotate(Vector3.up * Time.deltaTime);
         }
-
-        //rb.AddForce(movement * speed);
+        */
+        //transform.position += movement * speed * Time.deltaTime;
+        rb.AddForce(movement * speed);
         //rb.MovePosition
     }
 
