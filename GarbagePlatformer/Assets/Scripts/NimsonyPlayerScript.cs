@@ -8,7 +8,7 @@ public class NimsonyPlayerScript : MonoBehaviour
     public Rigidbody rb;
     Animator anim;
 
-    public float jumpForce;
+    public float jumpForce, speed;
 
     //Lifted right from https://www.youtube.com/watch?v=ORD7gsuLivE&t=524s
 
@@ -38,7 +38,7 @@ public class NimsonyPlayerScript : MonoBehaviour
         heading += Input.GetAxis("Mouse X") * Time.deltaTime * 180;
         camPivot.rotation = Quaternion.Euler(0, heading, 0);
 
-        float h = Input.GetAxis("Horizontal"); float v = Input.GetAxis("Vertical");
+        float h = Input.GetAxisRaw("Horizontal"); float v = Input.GetAxisRaw("Vertical");
 
         //If the player is moving at all
         if (h != 0 || v != 0)
@@ -46,7 +46,15 @@ public class NimsonyPlayerScript : MonoBehaviour
         else if (h == 0 && v == 0)
             anim.SetBool("IsMoving", false);
 
+        /*
+         * Gonna try this later but with a controller
+         * 
+        Vector3 movement = new Vector3(h, 0.0f, v);
+        transform.rotation = Quaternion.LookRotation(movement);
 
+        transform.Translate(movement * speed * Time.deltaTime, Space.World);
+        */
+        
         input = new Vector2(h, v);
         input = Vector2.ClampMagnitude(input, 1);
 
@@ -67,19 +75,20 @@ public class NimsonyPlayerScript : MonoBehaviour
             currentRotation = camPivot.eulerAngles;
             transform.eulerAngles = currentRotation;
         }
-        /*
+
+        //transform.rotation = Quaternion.LookRotation(input);
+        
         //moving right
+        /*
         if(h > 0)
         {
-            currentRotation = cam.eulerAngles;
-            transform.eulerAngles = currentRotation;
+            transform.Rotate(new Vector3(0.0f, 90.0f, 0.0f));
         }
-
+        
         //moving left
         if (h < 0)
         {
-            currentRotation = -camR;
-            transform.eulerAngles = currentRotation;
+            transform.Rotate(new Vector3(0.0f, -90.0f, 0.0f));
         }
         */
 
