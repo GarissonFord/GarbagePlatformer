@@ -113,7 +113,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   timeSinceSpawn: 0
-  destroyTime: 5
+  destroyTime: 10
   particle: {fileID: 19800002, guid: 5d0cd99dda746cd4b857f2df1031679e, type: 2}
 --- !u!135 &135177390230597148
 SphereCollider:

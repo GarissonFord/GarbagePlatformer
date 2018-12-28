@@ -139,7 +139,10 @@ public class NimsonyPlayerScript : MonoBehaviour
     private void OnCollisionStay(Collision collision)
     {
         if (collision.gameObject.CompareTag("Ground"))
+        {
+            grounded = true;
             anim.SetBool("Grounded", true);
+        }
     }
 
     private void OnCollisionExit(Collision collision)
