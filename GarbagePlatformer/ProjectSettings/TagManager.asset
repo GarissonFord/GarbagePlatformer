@@ -5,6 +5,8 @@ TagManager:
   serializedVersion: 2
   tags:
   - Ground
+  - Moving Ground
+  - Elevator Switch
   layers:
   - Default
   - TransparentFX

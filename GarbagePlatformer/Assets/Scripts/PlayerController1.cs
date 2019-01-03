@@ -2,14 +2,16 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class NimsonyPlayerScript : MonoBehaviour
+public class PlayerController1 : MonoBehaviour
 {
+    /* This script is gonna directly copy a lot from the NimSony script but
+     * I now want full 360 control of both player and camera so I'm gonna get
+     * rid of the section where the player moves forward with the camera's forward
+     */ 
+
     //Component references
     public Rigidbody rb;
     Animator anim;
-    public AudioSource audio;
-
-    public AudioClip jumpAudio, landingAudio;
 
     public float jumpForce, speed;
 
@@ -29,14 +31,15 @@ public class NimsonyPlayerScript : MonoBehaviour
 
     public bool grounded;
 
+    // Start is called before the first frame update
     void Start()
     {
         rb = GetComponent<Rigidbody>();
         anim = GetComponent<Animator>();
-        audio = GetComponent<AudioSource>();
     }
 
-    void Update ()
+    // Update is called once per frame
+    void Update()
     {
         //Rotate by 180 degrees per second
         heading += Input.GetAxis("Mouse X") * Time.deltaTime * 180;
@@ -50,15 +53,9 @@ public class NimsonyPlayerScript : MonoBehaviour
         else if (h == 0 && v == 0)
             anim.SetBool("IsMoving", false);
 
-        /*
-         * Gonna try this later but with a controller
-         * 
-        Vector3 movement = new Vector3(h, 0.0f, v);
-        transform.rotation = Quaternion.LookRotation(movement);
+        input = new Vector2(h, v);
+        input = Vector2.ClampMagnitude(input, 1);
 
-        transform.Translate(movement * speed * Time.deltaTime, Space.World);
-        */
-        
         input = new Vector2(h, v);
         input = Vector2.ClampMagnitude(input, 1);
 
@@ -71,42 +68,37 @@ public class NimsonyPlayerScript : MonoBehaviour
         camF = camF.normalized;
         camR = camR.normalized;
 
-        // v > 0 Means the player's input is to move forward
+        Vector3 movement = new Vector3(h, 0.0f, v) * Time.deltaTime * 5;
 
+        //moving forward
         if (v > 0)
         {
             //Sets rotation to the camera pivot's forward
-            currentRotation = camPivot.eulerAngles;
-            transform.eulerAngles = currentRotation;
+            //currentRotation = camPivot.eulerAngles;
+            //transform.eulerAngles = currentRotation;
+            transform.rotation = Quaternion.LookRotation(camF);
+            movement = camF * Time.deltaTime * 5;
         }
-        //else
-        /*
+        //moving backward
+        if(v < 0)
         {
-            transform.rotation = Quaternion.LookRotation(new Vector3(h, 0.0f, v));
-        }    
-        */
+            transform.rotation = Quaternion.LookRotation(-camF);
+            movement = -camF * Time.deltaTime * 5;
+        }
         //moving right
-        /*
         if(h > 0)
         {
-            transform.Rotate(new Vector3(0.0f, 90.0f, 0.0f));
+            transform.rotation = Quaternion.LookRotation(camR);
+            movement = camR * Time.deltaTime * 5;
         }
-        
         //moving left
-        if (h < 0)
+        if(h < 0)
         {
-            transform.Rotate(new Vector3(0.0f, -90.0f, 0.0f));
+            transform.rotation = Quaternion.LookRotation(-camR);
+            movement = -camR * Time.deltaTime * 5;
         }
-        */
 
-        //Walking backwards
-        if (v < 0)
-            anim.SetBool("MovingBackwards", true);
-        else if (v >= 0)
-            anim.SetBool("MovingBackwards", false);
-
-        //Final movement update
-        transform.position += (camF * input.y + camR * input.x) * Time.deltaTime * 5;
+        transform.position += movement;
     }
 
     void LateUpdate()
@@ -117,7 +109,7 @@ public class NimsonyPlayerScript : MonoBehaviour
          * animator doesn't detect when a float equals a specific value, we can 
          * check for when it is less than 0.
          */
-        anim.SetFloat("Velocity", rb.velocity.y);    
+        anim.SetFloat("Velocity", rb.velocity.y);
     }
 
     void FixedUpdate()
@@ -125,8 +117,6 @@ public class NimsonyPlayerScript : MonoBehaviour
         if (Input.GetButtonDown("Jump") && grounded)
         {
             rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
-            audio.clip = jumpAudio;
-            audio.Play();
             anim.SetTrigger("Jump");
         }
     }
@@ -135,41 +125,31 @@ public class NimsonyPlayerScript : MonoBehaviour
      * is touching the ground or not. This will help the animator know when to 
      * switch from the 'floating' clip to the 'landing' clip.
      */
-     
+
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.CompareTag("Ground") || collision.gameObject.CompareTag("Moving Ground")) 
+        if (collision.gameObject.CompareTag("Ground"))
         {
             grounded = true;
-            audio.clip = landingAudio;
-            audio.Play();
             anim.SetBool("Grounded", true);
         }
     }
 
-    private void OnCollisionStay(Collision collision )
+    private void OnCollisionStay(Collision collision)
     {
-        if (collision.gameObject.CompareTag("Ground") || collision.gameObject.CompareTag("Moving Ground"))
+        if (collision.gameObject.CompareTag("Ground"))
         {
             grounded = true;
             anim.SetBool("Grounded", true);
         }
-
-        //The player doesn't move with the platform unless they are a child of it
-        if (collision.gameObject.CompareTag("Moving Ground"))
-            transform.parent = collision.gameObject.transform;
     }
 
     private void OnCollisionExit(Collision collision)
     {
-        if (collision.gameObject.CompareTag("Ground") || collision.gameObject.CompareTag("Moving Ground"))
+        if (collision.gameObject.CompareTag("Ground"))
         {
             grounded = false;
             anim.SetBool("Grounded", false);
         }
-
-        //The player doesn't move with the platform unless they are a child of it
-        if (collision.gameObject.CompareTag("Moving Ground"))
-            transform.parent = null;
     }
 }
