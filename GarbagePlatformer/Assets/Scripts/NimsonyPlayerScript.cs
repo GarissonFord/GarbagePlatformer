@@ -17,7 +17,10 @@ public class NimsonyPlayerScript : MonoBehaviour
 
     //This is the parent object of the Main Camera
     public Transform camPivot;
+    //For horizontal rotation
     float heading;
+    //For vertical rotation
+    float heading2;
     //Direct reference to the camera
     public Transform cam;
 
@@ -25,7 +28,7 @@ public class NimsonyPlayerScript : MonoBehaviour
     Vector2 input;
 
     //Now I'm taking from this https://www.youtube.com/watch?v=Gv70bd_GHkA
-    Vector3 currentRotation;
+    public Vector3 currentRotation;
 
     public bool grounded;
 
@@ -38,9 +41,16 @@ public class NimsonyPlayerScript : MonoBehaviour
 
     void Update ()
     {
-        //Rotate by 180 degrees per second
-        heading += Input.GetAxis("Mouse X") * Time.deltaTime * 180;
-        camPivot.rotation = Quaternion.Euler(0, heading, 0);
+        //Mouse input
+        float mouseX = Input.GetAxis("Mouse X");
+        float mouseY = Input.GetAxis("Mouse Y");
+        //Stick input
+        float inputX = Input.GetAxis("RightStickHorizontal"), inputZ = Input.GetAxis("RightStickVertical");
+        //Apply the X rotation
+        //Using either mouseX or inputX 
+        heading += mouseX * Time.deltaTime * 180;
+        heading2 += mouseY * Time.deltaTime * 180;
+        camPivot.rotation = Quaternion.Euler(heading2, heading, 0);
 
         float h = Input.GetAxisRaw("Horizontal"); float v = Input.GetAxisRaw("Vertical");
 
@@ -50,14 +60,13 @@ public class NimsonyPlayerScript : MonoBehaviour
         else if (h == 0 && v == 0)
             anim.SetBool("IsMoving", false);
 
-        /*
-         * Gonna try this later but with a controller
-         * 
-        Vector3 movement = new Vector3(h, 0.0f, v);
+        
+        //Gonna try this later but with a controller
+         
+        Vector3 movement = new Vector3(inputX, 0.0f, inputZ);
         transform.rotation = Quaternion.LookRotation(movement);
 
-        transform.Translate(movement * speed * Time.deltaTime, Space.World);
-        */
+        //transform.Translate(movement * speed * Time.deltaTime, Space.World);        
         
         input = new Vector2(h, v);
         input = Vector2.ClampMagnitude(input, 1);
@@ -73,32 +82,17 @@ public class NimsonyPlayerScript : MonoBehaviour
 
         // v > 0 Means the player's input is to move forward
 
-        if (v > 0)
+        if (v != 0)
         {
             //Sets rotation to the camera pivot's forward
             currentRotation = camPivot.eulerAngles;
             transform.eulerAngles = currentRotation;
-        }
-        //else
-        /*
+        }      
+        else     
         {
             transform.rotation = Quaternion.LookRotation(new Vector3(h, 0.0f, v));
         }    
-        */
-        //moving right
-        /*
-        if(h > 0)
-        {
-            transform.Rotate(new Vector3(0.0f, 90.0f, 0.0f));
-        }
         
-        //moving left
-        if (h < 0)
-        {
-            transform.Rotate(new Vector3(0.0f, -90.0f, 0.0f));
-        }
-        */
-
         //Walking backwards
         if (v < 0)
             anim.SetBool("MovingBackwards", true);
