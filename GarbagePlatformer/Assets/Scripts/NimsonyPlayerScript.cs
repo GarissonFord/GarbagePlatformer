@@ -32,11 +32,17 @@ public class NimsonyPlayerScript : MonoBehaviour
 
     public bool grounded;
 
+    //For when attaching to platforms
+    public Vector3 scale;
+
+    public float h, v;
+
     void Start()
     {
         rb = GetComponent<Rigidbody>();
         anim = GetComponent<Animator>();
         audio = GetComponent<AudioSource>();
+        scale = transform.localScale;
     }
 
     void Update ()
@@ -48,25 +54,20 @@ public class NimsonyPlayerScript : MonoBehaviour
         float inputX = Input.GetAxis("RightStickHorizontal"), inputZ = Input.GetAxis("RightStickVertical");
         //Apply the X rotation
         //Using either mouseX or inputX 
-        heading += mouseX * Time.deltaTime * 180;
-        heading2 += mouseY * Time.deltaTime * 180;
+        heading += (mouseX + inputX) * Time.deltaTime * 180;
+        heading2 += (mouseY + inputZ) * Time.deltaTime * 180;
         camPivot.rotation = Quaternion.Euler(heading2, heading, 0);
 
-        float h = Input.GetAxisRaw("Horizontal"); float v = Input.GetAxisRaw("Vertical");
+        h = Input.GetAxisRaw("Horizontal");
+        v = Input.GetAxisRaw("Vertical");
 
         //If the player is moving at all
         if (h != 0 || v != 0)
             anim.SetBool("IsMoving", true);
         else if (h == 0 && v == 0)
             anim.SetBool("IsMoving", false);
-
-        
-        //Gonna try this later but with a controller
-         
-        Vector3 movement = new Vector3(inputX, 0.0f, inputZ);
-        transform.rotation = Quaternion.LookRotation(movement);
-
-        //transform.Translate(movement * speed * Time.deltaTime, Space.World);        
+      
+        Vector3 movement = new Vector3(inputX, 0.0f, inputZ);  
         
         input = new Vector2(h, v);
         input = Vector2.ClampMagnitude(input, 1);
@@ -87,11 +88,7 @@ public class NimsonyPlayerScript : MonoBehaviour
             //Sets rotation to the camera pivot's forward
             currentRotation = camPivot.eulerAngles;
             transform.eulerAngles = currentRotation;
-        }      
-        else     
-        {
-            transform.rotation = Quaternion.LookRotation(new Vector3(h, 0.0f, v));
-        }    
+        } 
         
         //Walking backwards
         if (v < 0)
@@ -150,8 +147,14 @@ public class NimsonyPlayerScript : MonoBehaviour
         }
 
         //The player doesn't move with the platform unless they are a child of it
+        //BUT the player character's transform is being altered when this happens, so bricking for the moment
+        /*
         if (collision.gameObject.CompareTag("Moving Ground"))
+        {
             transform.parent = collision.gameObject.transform;
+            //transform.localScale = scale;
+        }
+        */
     }
 
     private void OnCollisionExit(Collision collision)
@@ -163,7 +166,9 @@ public class NimsonyPlayerScript : MonoBehaviour
         }
 
         //The player doesn't move with the platform unless they are a child of it
+        /*
         if (collision.gameObject.CompareTag("Moving Ground"))
             transform.parent = null;
+         */
     }
 }

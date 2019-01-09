@@ -17,10 +17,11 @@ public class Elevator : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        distanceFromOrigin = transform.position.y - origin;
-        if (distanceFromOrigin >= maxDistance || distanceFromOrigin <= 0)
+        distanceFromOrigin = Mathf.Abs(transform.position.y - origin);
+        if (distanceFromOrigin >= maxDistance /*|| distanceFromOrigin <= 0*/)
         {
-            StartCoroutine(Wait());
+            //Elevators get stuck in one place, will get back to
+            //StartCoroutine(Wait());
             moveSpeed = -moveSpeed;
         }
 
@@ -29,6 +30,9 @@ public class Elevator : MonoBehaviour
 
     private IEnumerator Wait()
     {
+        float oldSpeed = moveSpeed;
+        moveSpeed = 0.0f;
         yield return new WaitForSeconds(2.0f);
+        moveSpeed = oldSpeed;
     }
 }
