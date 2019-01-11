@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class NimsonyPlayerScript : MonoBehaviour
 {
@@ -9,7 +10,7 @@ public class NimsonyPlayerScript : MonoBehaviour
     Animator anim;
     public AudioSource audio;
 
-    public AudioClip jumpAudio, landingAudio;
+    public AudioClip jumpAudio, landingAudio, pickUpAudio;
 
     public float jumpForce, speed;
 
@@ -37,12 +38,17 @@ public class NimsonyPlayerScript : MonoBehaviour
 
     public float h, v;
 
+    public float numCollectibles;
+    public Text numCollectedText;
+
     void Start()
     {
         rb = GetComponent<Rigidbody>();
         anim = GetComponent<Animator>();
         audio = GetComponent<AudioSource>();
         scale = transform.localScale;
+        numCollectibles = 0;
+        numCollectedText.text = "Collected: " + numCollectibles.ToString();
     }
 
     void Update ()
@@ -122,11 +128,23 @@ public class NimsonyPlayerScript : MonoBehaviour
         }
     }
 
+    private void OnTriggerEnter(Collider other)
+    {
+        if(other.CompareTag("Collectible"))
+        {
+            audio.clip = pickUpAudio;
+            audio.Play();
+            other.gameObject.SetActive(false);
+            numCollectibles++;
+            numCollectedText.text = "Collected: " + numCollectibles.ToString();
+        }
+    }
+
     /* All of these collision methods are meant to determine whether the player
      * is touching the ground or not. This will help the animator know when to 
      * switch from the 'floating' clip to the 'landing' clip.
      */
-     
+
     private void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.CompareTag("Ground") || collision.gameObject.CompareTag("Moving Ground")) 
