@@ -148,13 +148,12 @@ public class NimsonyPlayerScript : MonoBehaviour
 
         //The player doesn't move with the platform unless they are a child of it
         //BUT the player character's transform is being altered when this happens, so bricking for the moment
-        /*
+        
         if (collision.gameObject.CompareTag("Moving Ground"))
         {
             transform.parent = collision.gameObject.transform;
             //transform.localScale = scale;
-        }
-        */
+        }       
     }
 
     private void OnCollisionExit(Collision collision)
@@ -166,9 +165,9 @@ public class NimsonyPlayerScript : MonoBehaviour
         }
 
         //The player doesn't move with the platform unless they are a child of it
-        /*
+        
         if (collision.gameObject.CompareTag("Moving Ground"))
             transform.parent = null;
-         */
+         
     }
 }
